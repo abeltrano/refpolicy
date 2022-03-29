@@ -1,0 +1,28 @@
+policy_module(wsl_init, 1.0.0)
+
+########################################
+#
+# Declarations
+#
+
+type wsl_init_t;
+type wsl_init_exec_t;
+domain_base_type(wsl_init_t);
+
+# init_daemon_domain(wsl_init_t, wsl_init_exec_t)
+
+
+#permissive wsl_init_t;
+
+########################################
+#
+# wsl_init local policy
+#
+#allow wsl_init_t self:fifo_file rw_fifo_file_perms;
+#allow wsl_init_t self:unix_stream_socket create_stream_socket_perms;
+
+#domain_use_interactive_fds(wsl_init_t)
+
+#files_read_etc_files(wsl_init_t)
+
+#miscfiles_read_localization(wsl_init_t)

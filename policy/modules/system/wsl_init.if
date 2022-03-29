@@ -1,0 +1,40 @@
+
+## <summary>policy for wsl_init</summary>
+
+########################################
+## <summary>
+##	Execute wsl_init_exec_t in the wsl_init domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`wsl_init_domtrans',`
+	gen_require(`
+		type wsl_init_t, wsl_init_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, wsl_init_exec_t, wsl_init_t)
+')
+
+######################################
+## <summary>
+##	Execute wsl_init in the caller domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`wsl_init_exec',`
+	gen_require(`
+		type wsl_init_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	can_exec($1, wsl_init_exec_t)
+')
