@@ -550,3 +550,6 @@ allow kern_unconfined unlabeled_t:filesystem { mount remount unmount getattr rel
 allow kern_unconfined unlabeled_t:association { sendto recvfrom setcontext polmatch };
 allow kern_unconfined unlabeled_t:packet { send recv relabelto forward_in forward_out };
 allow kern_unconfined unlabeled_t:process { fork signal_perms ptrace getsched setsched getsession getpgid setpgid getcap setcap share getattr setexec setfscreate noatsecure siginh setrlimit rlimitinh setcurrent setkeycreate setsockcreate getrlimit };
+
+# Added for WSL
+# allow kernel_t wsl_init_t:process dyntransition;
