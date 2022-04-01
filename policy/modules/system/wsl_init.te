@@ -9,82 +9,72 @@ type wsl_init_t;
 type wsl_init_exec_t;
 domain_base_type(wsl_init_t);
 
-# init_daemon_domain(wsl_init_t, wsl_init_exec_t)
-
+# TODO: combine rules where possible
+allow wsl_init_t bin_t:file { open read };
+allow wsl_init_t binfmt_misc_fs_t:dir search;
+allow wsl_init_t binfmt_misc_fs_t:file open;
+allow wsl_init_t binfmt_misc_fs_t:file write;
+allow wsl_init_t binfmt_misc_fs_t:filesystem mount;
+allow wsl_init_t cgroup_t:dir { add_name create search write };
+allow wsl_init_t cgroup_t:file { create open write };
+allow wsl_init_t cgroup_t:file read;
+allow wsl_init_t cgroup_t:filesystem mount;
+allow wsl_init_t debugfs_t:dir search;
+allow wsl_init_t device_t:chr_file { open read };
 allow wsl_init_t device_t:chr_file write;
+allow wsl_init_t etc_t:file { getattr open read };
+allow wsl_init_t fs_t:filesystem getattr;
+allow wsl_init_t fs_t:filesystem mount;
 allow wsl_init_t kernel_t:fd use;
 allow wsl_init_t kernel_t:system syslog_read;
+allow wsl_init_t node_t:tcp_socket node_bind;
+allow wsl_init_t proc_t:dir read;
+allow wsl_init_t proc_t:filesystem getattr;
+allow wsl_init_t proc_t:filesystem mount;
 allow wsl_init_t proc_t:filesystem unmount;
+allow wsl_init_t root_t:dir { add_name create mounton };
 allow wsl_init_t root_t:dir write;
+allow wsl_init_t security_t:dir { getattr open read };
 allow wsl_init_t security_t:dir search;
 allow wsl_init_t security_t:file { getattr open read };
 allow wsl_init_t security_t:filesystem { getattr mount };
 allow wsl_init_t security_t:security read_policy;
-allow wsl_init_t self:capability sys_admin;
-allow wsl_init_t self:process setpgid;
-allow wsl_init_t sysctl_vm_t:dir search;
-allow wsl_init_t sysctl_vm_t:file { open write };
-allow wsl_init_t sysfs_t:dir read;
-allow wsl_init_t sysfs_t:lnk_file read;
-allow wsl_init_t unlabeled_t:dir remove_name;
-allow wsl_init_t fs_t:filesystem mount;
-allow wsl_init_t root_t:dir { add_name create mounton };
-allow wsl_init_t tmpfs_t:dir search;
-allow wsl_init_t tmpfs_t:filesystem mount;
-
-allow wsl_init_t cgroup_t:file read;
-allow wsl_init_t node_t:tcp_socket node_bind;
-allow wsl_init_t proc_t:dir read;
-allow wsl_init_t self:process { execmem signull };
-allow wsl_init_t self:tcp_socket { bind create listen setopt shutdown };
-allow wsl_init_t tmpfs_t:dir { add_name create open read setattr write };
-allow wsl_init_t tmpfs_t:filesystem getattr;
-allow wsl_init_t unlabeled_t:dir { open read rmdir };
-allow wsl_init_t unlabeled_t:file { execute execute_no_trans ioctl map open read };
-
-allow wsl_init_t security_t:dir { getattr open read };
 allow wsl_init_t self:capability { dac_override dac_read_search };
-allow wsl_init_t selinux_config_t:file getattr;
-allow wsl_init_t tmpfs_t:chr_file unlink;
-allow wsl_init_t tmpfs_t:dir remove_name;
-allow wsl_init_t tmpfs_t:file { create rename unlink };
-
-allow wsl_init_t device_t:chr_file { open read };
-allow wsl_init_t fs_t:filesystem getattr;
-allow wsl_init_t proc_t:filesystem mount;
+allow wsl_init_t self:capability sys_admin;
 allow wsl_init_t self:capability sys_chroot;
-allow wsl_init_t unlabeled_t:dir { mounton search };
-
-allow wsl_init_t cgroup_t:dir { add_name create search write };
-allow wsl_init_t cgroup_t:filesystem mount;
-allow wsl_init_t sysfs_t:dir mounton;
-allow wsl_init_t tmpfs_t:dir mounton;
-
-allow wsl_init_t cgroup_t:file { create open write };
-allow wsl_init_t debugfs_t:dir search;
-allow wsl_init_t self:vsock_socket { connect create setopt };
-
-allow wsl_init_t binfmt_misc_fs_t:dir search;
-allow wsl_init_t binfmt_misc_fs_t:file write;
-allow wsl_init_t binfmt_misc_fs_t:filesystem mount;
-allow wsl_init_t sysctl_fs_t:dir { mounton search };
-allow wsl_init_t sysctl_t:dir search;
-allow wsl_init_t unlabeled_t:filesystem mount;
-
-allow wsl_init_t binfmt_misc_fs_t:file open;
 allow wsl_init_t self:capability sys_resource;
+allow wsl_init_t self:process { execmem signull };
+allow wsl_init_t self:process setpgid;
+allow wsl_init_t self:process setrlimit;
+allow wsl_init_t self:tcp_socket { bind create listen setopt shutdown };
+allow wsl_init_t self:udp_socket { create ioctl };
+allow wsl_init_t self:vsock_socket { connect create setopt };
+allow wsl_init_t selinux_config_t:file getattr;
+allow wsl_init_t sysctl_fs_t:dir { mounton search };
 allow wsl_init_t sysctl_fs_t:file { open write };
 allow wsl_init_t sysctl_kernel_t:dir search;
 allow wsl_init_t sysctl_kernel_t:file { open write };
-
-allow wsl_init_t bin_t:file { open read };
-allow wsl_init_t etc_t:file { getattr open read };
-allow wsl_init_t proc_t:filesystem getattr;
-allow wsl_init_t self:process setrlimit;
-allow wsl_init_t self:udp_socket { create ioctl };
-allow wsl_init_t tmpfs_t:dir getattr;
-allow wsl_init_t unlabeled_t:dir { getattr write };
-allow wsl_init_t unlabeled_t:file unlink;
-
+allow wsl_init_t sysctl_t:dir search;
+allow wsl_init_t sysctl_vm_t:dir search;
+allow wsl_init_t sysctl_vm_t:file { open write };
+allow wsl_init_t sysfs_t:dir mounton;
+allow wsl_init_t sysfs_t:dir read;
+allow wsl_init_t sysfs_t:lnk_file read;
 allow wsl_init_t tmpfs_t:chr_file { create link };
+allow wsl_init_t tmpfs_t:chr_file unlink;
+allow wsl_init_t tmpfs_t:dir { add_name create open read setattr write };
+allow wsl_init_t tmpfs_t:dir getattr;
+allow wsl_init_t tmpfs_t:dir mounton;
+allow wsl_init_t tmpfs_t:dir remove_name;
+allow wsl_init_t tmpfs_t:dir search;
+allow wsl_init_t tmpfs_t:file { create rename unlink };
+allow wsl_init_t tmpfs_t:filesystem getattr;
+allow wsl_init_t tmpfs_t:filesystem mount;
 allow wsl_init_t unlabeled_t:dir { create rename reparent setattr };
+allow wsl_init_t unlabeled_t:dir { getattr write };
+allow wsl_init_t unlabeled_t:dir { mounton search };
+allow wsl_init_t unlabeled_t:dir { open read rmdir };
+allow wsl_init_t unlabeled_t:dir remove_name;
+allow wsl_init_t unlabeled_t:file { execute execute_no_trans ioctl map open read };
+allow wsl_init_t unlabeled_t:file unlink;
+allow wsl_init_t unlabeled_t:filesystem mount;
