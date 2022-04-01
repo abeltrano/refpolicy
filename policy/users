@@ -9,7 +9,7 @@
 # Note: Identities without a prefix will not be listed
 # in the users_extra file used by genhomedircon.
 
-gen_user(u,, object_r, s0, s0 - mls_systemhigh, mcs_allcats)
+gen_user(u,, object_r, s0, s0 - mls_systemhigh)
 
 #
 # system_u is the user identity for system processes and objects.
