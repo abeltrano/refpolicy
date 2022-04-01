@@ -19,3 +19,5 @@
 
 # sample for regular user
 #user jdoe roles { user_r };
+
+user u roles { object_r };
