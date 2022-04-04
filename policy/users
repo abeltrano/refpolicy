@@ -3,13 +3,15 @@
 # Core User configuration.
 #
 
+user u roles { r } level s0 range s0 - s0;
+
 #
 # gen_user(username, prefix, role_set, mls_defaultlevel, mls_range, [mcs_catetories])
 #
 # Note: Identities without a prefix will not be listed
 # in the users_extra file used by genhomedircon.
 
-gen_user(u,, object_r, s0, s0 - mls_systemhigh)
+#gen_user(u,, object_r, s0, s0 - mls_systemhigh)
 
 #
 # system_u is the user identity for system processes and objects.
