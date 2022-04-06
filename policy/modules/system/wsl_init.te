@@ -5,8 +5,11 @@ policy_module(wsl_init, 1.0.0)
 # Declarations
 #
 
+attribute mlstrustedsubject;
+type kernel, domain, mlstrustedsubject;
+
 role r;
-role r types kernel_t;
+role r types kernel;
 
 type wsl_init_t;
 type wsl_init_exec_t;
