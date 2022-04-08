@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">-->
+<package xmlns="https://github.com/NuGet/NuGet.Client/blob/dev/src/NuGet.Core/NuGet.Packaging/compiler/resources/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.WSA.SELinux.Policy</id>
+    <version>0.1.1-1</version>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://dev.azure.com/msaosp/Latte</projectUrl>
+    <repository type="git" url="https://msaosp@dev.azure.com/msaosp/Latte/_git/wsl_selinux_policy"/>
+    <description>WSA SElinux Policy</description>
+    <copyright>Copyright 2022</copyright>
+    <tags>native</tags>
+  </metadata>
+  <files>
+    <file src="Microsoft.WSA.SELinux.Policy.targets" target="build\native" />
+    <file src="..\policy\wsl\include\**" target="build\native\include" />
+    <file src="..\policy\wsl\config" target="build\native\bin\policy\etc\selinux\config" />
+    <file src="..\policy.33" target="build\native\bin\policy\etc\selinux\staging\policy\policy.33" />
+  </files>
+</package>

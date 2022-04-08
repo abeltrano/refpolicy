@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+***********************************************************************************************
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+      <WsaSelinuxPolicyDirectory>$(MSBuildThisFileDirectory)\policy</WslCoreSelinuxDirectory>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <WsaSelinuxPolicyFile Include="$(WsaSelinuxPolicyDirectory)\**\*.*"/> 
+  </ItemGroup>
+
+  <Target Name="WsaSelinuxPolicyCopyFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <Copy SourceFiles="@(WsaSelinuxPolicyFile)" DestinationFolder="$(OutDir)\WsaSelinuxPolicy\policy\%(RecursiveDir)"/> 
+  </Target>
+</Project>
