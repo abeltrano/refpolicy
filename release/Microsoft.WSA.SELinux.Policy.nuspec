@@ -6,6 +6,7 @@
     <version>0.1.1-1</version>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
+    <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectUrl>https://dev.azure.com/msaosp/Latte</projectUrl>
     <repository type="git" url="https://msaosp@dev.azure.com/msaosp/Latte/_git/wsl_selinux_policy"/>
