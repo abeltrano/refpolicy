@@ -51,7 +51,7 @@ ubac_process_exempt(sysadm_t)
 ubac_file_exempt(sysadm_t)
 ubac_fd_exempt(sysadm_t)
 
-init_exec(sysadm_t)
+init_exec1(sysadm_t)
 init_admin(sysadm_t)
 
 # Add/remove user home directories

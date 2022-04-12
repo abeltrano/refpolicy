@@ -196,7 +196,7 @@ selinux_get_fs_mount(portage_t)
 auth_manage_shadow(portage_t)
 
 # merging baselayout will need this:
-init_exec(portage_t)
+init_exec1(portage_t)
 
 libs_run_ldconfig(portage_t, portage_roles)
 

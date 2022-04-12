@@ -791,7 +791,7 @@ interface(`init_pgm_spec_user_daemon_domain',`
 ## </param>
 ## <rolecap/>
 #
-interface(`init_exec',`
+interface(`init_exec1',`
 	gen_require(`
 		type init_exec_t;
 	')
@@ -1763,7 +1763,7 @@ interface(`init_telinit',`
 	dev_list_all_dev_nodes($1)
 	files_search_runtime($1)
 
-	init_exec($1)
+	init_exec1($1)
 ')
 
 ########################################

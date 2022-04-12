@@ -1497,7 +1497,7 @@ interface(`userdom_security_admin_template',`
 	files_relabel_non_auth_files($1)
 	auth_relabel_shadow($1)
 
-	init_exec($1)
+	init_exec1($1)
 
 	logging_send_syslog_msg($1)
 	logging_read_audit_log($1)

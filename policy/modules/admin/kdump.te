@@ -89,7 +89,7 @@ fs_getattr_all_fs(kdumpctl_t)
 fs_search_all(kdumpctl_t)
 
 init_domtrans_script(kdumpctl_t)
-init_exec(kdumpctl_t)
+init_exec1(kdumpctl_t)
 
 libs_exec_ld_so(kdumpctl_t)
 

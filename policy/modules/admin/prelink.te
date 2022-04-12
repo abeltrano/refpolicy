@@ -189,7 +189,7 @@ optional_policy(`
 	auth_use_nsswitch(prelink_cron_system_t)
 
 	init_telinit(prelink_cron_system_t)
-	init_exec(prelink_cron_system_t)
+	init_exec1(prelink_cron_system_t)
 
 	libs_exec_ld_so(prelink_cron_system_t)
 

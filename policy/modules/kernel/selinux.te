@@ -68,7 +68,8 @@ if(secure_mode_policyload) {
 # Controlled load_policy access
 #
 
-neverallow ~{ selinux_unconfined_type can_load_policy } security_t:security load_policy;
+# REMOVED
+# neverallow ~{ selinux_unconfined_type can_load_policy } security_t:security load_policy;
 
 allow can_load_policy security_t:dir list_dir_perms;
 allow can_load_policy security_t:file rw_file_perms;
