@@ -137,19 +137,9 @@ interface(`init_script_domain',`
 	domain_type($1)
 	domain_entry_file($1, $2)
 
-	role system_r types $1;
+	role r types $1;
 
 	domtrans_pattern(init_run_all_scripts_domain, $2, $1)
-
-	ifdef(`init_systemd',`
-		gen_require(`
-			type init_t;
-		')
-
-		allow $1 init_t:unix_stream_socket { getattr read write ioctl };
-
-		allow init_t $1:process2 { nnp_transition nosuid_transition };
-	')
 ')
 
 ########################################
@@ -170,31 +160,17 @@ interface(`init_script_domain',`
 interface(`init_domain',`
 	gen_require(`
 		type init_t;
-		role system_r;
+		role r;
 	')
 
 	domain_type($1)
 	domain_entry_file($1, $2)
 
-	role system_r types $1;
+	role r types $1;
 
 	domtrans_pattern(init_t, $2, $1)
 
 	allow init_t $1:process rlimitinh;
-
-	ifdef(`init_systemd',`
-		gen_require(`
-			type init_tmpfs_t;
-		')
-
-		allow $1 init_t:unix_stream_socket { getattr read write ioctl };
-
-		allow init_t $1:process2 { nnp_transition nosuid_transition };
-
-		# StandardInputText uses a memfd rw shm segment.
-		# Cannot deny writes or it breaks.
-		allow $1 init_tmpfs_t:file rw_inherited_file_perms;
-	')
 ')
 
 ########################################
@@ -262,7 +238,7 @@ interface(`init_ranged_domain',`
 interface(`init_spec_daemon_domain',`
 	gen_require(`
 		type init_t;
-		role system_r;
+		role r;
 		attribute daemon;
 	')
 
@@ -271,25 +247,11 @@ interface(`init_spec_daemon_domain',`
 	domain_type($1)
 	domain_entry_file($1, $2)
 
-	role system_r types $1;
+	role r types $1;
 
 	spec_domtrans_pattern(init_t, $2, $1)
 
 	allow init_t $1:process rlimitinh;
-
-	ifdef(`init_systemd',`
-		gen_require(`
-			type init_tmpfs_t;
-		')
-
-		allow $1 init_t:unix_stream_socket { getattr read write ioctl };
-
-		allow init_t $1:process2 { nnp_transition nosuid_transition };
-
-		# StandardInputText uses a memfd rw shm segment.
-		# Cannot deny writes or it breaks.
-		allow $1 init_tmpfs_t:file rw_inherited_file_perms;
-	')
 
 	# daemons started from init will
 	# inherit fds from init for the console
@@ -343,7 +305,7 @@ interface(`init_spec_daemon_domain',`
 interface(`init_daemon_domain',`
 	gen_require(`
 		type init_t, initrc_t;
-		role system_r;
+		role r;
 		attribute daemon;
 	')
 
@@ -352,7 +314,7 @@ interface(`init_daemon_domain',`
 	domain_type($1)
 	domain_entry_file($1, $2)
 
-	role system_r types $1;
+	role r types $1;
 
 	domtrans_pattern(initrc_t, $2, $1)
 
@@ -369,20 +331,6 @@ interface(`init_daemon_domain',`
 
 	ifdef(`direct_sysadm_daemon',`
 		userdom_dontaudit_use_user_terminals($1)
-	')
-
-	ifdef(`init_systemd',`
-		init_domain($1, $2)
-
-		allow $1 init_t:unix_dgram_socket sendto;
-
-		optional_policy(`
-			systemd_stream_connect_socket_proxyd($1)
-		')
-	')
-
-	optional_policy(`
-		nscd_use($1)
 	')
 ')
 
@@ -538,20 +486,16 @@ interface(`init_named_socket_activation',`
 interface(`init_system_domain',`
 	gen_require(`
 		type initrc_t;
-		role system_r;
+		role r;
 		attribute systemprocess;
 	')
 
 	typeattribute $1 systemprocess;
 	application_domain($1, $2)
 
-	role system_r types $1;
+	role r types $1;
 
 	domtrans_pattern(initrc_t, $2, $1)
-
-	ifdef(`init_systemd',`
-		init_domain($1, $2)
-	')
 ')
 
 ########################################
@@ -774,10 +718,6 @@ interface(`init_pgm_spec_user_daemon_domain',`
 	spec_domtrans_pattern(init_t, init_exec_t, $1)
 
 	allow init_t $1:process { setsched rlimitinh noatsecure };
-
-	ifdef(`init_systemd',`
-		allow $1 init_t:unix_stream_socket { getattr read write ioctl };
-	')
 ')
 
 ########################################
@@ -2102,14 +2042,14 @@ interface(`init_startstop_service',`
 
 	',`direct_sysadm_daemon',`true',`
 		gen_require(`
-			role system_r;
+			role r;
 		')
 
 		# rules for sysvinit / upstart
 		init_labeled_script_domtrans($1, $4)
 		domain_system_change_exemption($1)
-		role_transition $2 $4 system_r;
-		allow $2 system_r;
+		role_transition $2 $4 r;
+		allow $2 r;
 
 	',` dnl else
 		optional_policy(`
@@ -2143,13 +2083,13 @@ interface(`init_startstop_service',`
 interface(`init_run_daemon',`
 	gen_require(`
 		attribute init_script_file_type;
-		role system_r;
+		role r;
 	')
 
-	allow $2 system_r;
+	allow $2 r;
 
 	init_all_labeled_script_domtrans($1)
-	role_transition $2 init_script_file_type system_r;
+	role_transition $2 init_script_file_type r;
 ')
 
 ########################################

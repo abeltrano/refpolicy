@@ -1,1 +1,1 @@
-system_u:system_r:svirt_t
+u:r:svirt_t

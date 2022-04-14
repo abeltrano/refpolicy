@@ -1,2 +1,1 @@
-# No application file contexts.
-# /init		--	gen_context(u:object_r:wsl_init_exec_t,s0)
+# /init		--	gen_context(u:r:kernel:s0)

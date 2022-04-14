@@ -13,7 +13,7 @@ define(`policy_module',`
 		module $1 ifelse(`$2',,1,$2);
 
 		require {
-			role system_r;
+			role r;
 			all_kernel_class_perms
 
 			ifdef(`enable_mcs',`

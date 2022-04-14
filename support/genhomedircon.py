@@ -174,7 +174,7 @@ class selinuxConfig:
 			for u in ulist:
 				user = u.split()
 				try:
-					if len(user)==0 or user[1] == "user_u" or user[1] == "system_u":
+					if len(user)==0 or user[1] == "user_u" or user[1] == "u":
 						continue
 					# !!! chooses first role in the list to use in the file context !!!
 					role = user[3]
@@ -200,7 +200,7 @@ class selinuxConfig:
 		rc = getstatusoutput("grep -E '^HOME_DIR|%%{USERID}|%%{USERNAME}' %s | sed"
 			" -e 's|HOME_DIR|%s|'"
 			" -e 's|ROLE|%s|'"
-			" -e 's|system_u|%s|'"
+			" -e 's|u|%s|'"
 			" -e 's|%%{USERID}|%s|'"
 			" -e 's|%%{USERNAME}|%s|'"
 			% (self.getHomeDirTemplate(), home, role, seuser, userid, username))

@@ -1,1 +1,1 @@
-system_u:sysadm_r:sysadm_t
+u:sysadm_r:sysadm_t

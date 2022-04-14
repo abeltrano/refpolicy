@@ -27,7 +27,7 @@ attribute can_setsecparam;
 attribute selinux_unconfined_type;
 
 type boolean_t, boolean_type;
-genfscon selinuxfs /booleans/ -- gen_context(system_u:object_r:boolean_t,s0)
+# genfscon selinuxfs /booleans/ -- gen_context(u:object_r:boolean_t,s0)
 
 type secure_mode_policyload_t;
 selinux_labeled_boolean(secure_mode_policyload_t, secure_mode_policyload)
@@ -41,9 +41,9 @@ type security_t;
 files_mountpoint(security_t)
 fs_type(security_t)
 mls_trusted_object(security_t)
-sid security gen_context(system_u:object_r:security_t,mls_systemhigh)
-genfscon selinuxfs / gen_context(system_u:object_r:security_t,s0)
-genfscon securityfs / gen_context(system_u:object_r:security_t,s0)
+# sid security gen_context(u:object_r:security_t,mls_systemhigh)
+# genfscon selinuxfs / gen_context(u:object_r:security_t,s0)
+# genfscon securityfs / gen_context(u:object_r:security_t,s0)
 
 ########################################
 #

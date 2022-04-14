@@ -1,1 +1,1 @@
-system_u:system_r:initrc_t
+u:r:initrc_t

@@ -44,19 +44,19 @@ class Packet:
 		self.ports = ports
 
 def print_nft_secmarks(packets,mls,mcs):
-	line = '\tsecmark default_input_packet {\n\t\t"system_u:object_r:'+DEFAULT_INPUT_PACKET
+	line = '\tsecmark default_input_packet {\n\t\t"u:object_r:'+DEFAULT_INPUT_PACKET
 	if mcs:
 		line += ":"+DEFAULT_MCS
 	elif mls:
 		line += ":"+DEFAULT_MLS
-	line += '"\n\t}\n\tsecmark default_output_packet {\n\t\t"system_u:object_r:'+DEFAULT_OUTPUT_PACKET
+	line += '"\n\t}\n\tsecmark default_output_packet {\n\t\t"u:object_r:'+DEFAULT_OUTPUT_PACKET
 	if mcs:
 		line += ":"+DEFAULT_MCS
 	elif mls:
 		line += ":"+DEFAULT_MLS
 	line += '"\n\t}'
 	print(line)
-	line = '\tsecmark icmp_packet {\n\t\t"system_u:object_r:'+ICMP_PACKET
+	line = '\tsecmark icmp_packet {\n\t\t"u:object_r:'+ICMP_PACKET
 	if mcs:
 		line += ":"+DEFAULT_MCS
 	elif mls:
@@ -64,12 +64,12 @@ def print_nft_secmarks(packets,mls,mcs):
 	line += '"\n\t}'
 	print(line)
 	for i in packets:
-		line = "\tsecmark "+i.prefix+'_input {\n\t\t"system_u:object_r:'+i.prefix+PACKET_INPUT
+		line = "\tsecmark "+i.prefix+'_input {\n\t\t"u:object_r:'+i.prefix+PACKET_INPUT
 		if mcs:
 			line += ":"+DEFAULT_MCS
 		elif mls:
 			line += ":"+DEFAULT_MLS
-		line += '"\n\t}\n\tsecmark '+i.prefix+'_output {\n\t\t"system_u:object_r:'+i.prefix+PACKET_OUTPUT
+		line += '"\n\t}\n\tsecmark '+i.prefix+'_output {\n\t\t"u:object_r:'+i.prefix+PACKET_OUTPUT
 		if mcs:
 			line += ":"+DEFAULT_MCS
 		elif mls:
@@ -85,7 +85,7 @@ def print_nft_rules(packets,mls,mcs,direction):
 	print('\t\tip6 nexthdr icmpv6 meta secmark set "icmp_packet"')
 
 def print_input_rules(packets,mls,mcs):
-	line = "base -A selinux_new_input -j SECMARK --selctx system_u:object_r:"+DEFAULT_INPUT_PACKET
+	line = "base -A selinux_new_input -j SECMARK --selctx u:object_r:"+DEFAULT_INPUT_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
@@ -93,14 +93,14 @@ def print_input_rules(packets,mls,mcs):
 
 	print(line)
 
-	line = "base -A selinux_new_input -p icmp -j SECMARK --selctx system_u:object_r:"+ICMP_PACKET
+	line = "base -A selinux_new_input -p icmp -j SECMARK --selctx u:object_r:"+ICMP_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
 		line += ":"+DEFAULT_MCS
 	print(line)
 
-	line = "base -A selinux_new_input -p icmpv6 -j SECMARK --selctx system_u:object_r:"+ICMP_PACKET
+	line = "base -A selinux_new_input -p icmpv6 -j SECMARK --selctx u:object_r:"+ICMP_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
@@ -109,7 +109,7 @@ def print_input_rules(packets,mls,mcs):
 
 	for i in packets:
 		for j in i.ports:
-			line="base -A selinux_new_input -p "+j.proto+" --dport "+re.sub('-', ':', j.num)+" -j SECMARK --selctx system_u:object_r:"+i.prefix+PACKET_INPUT
+			line="base -A selinux_new_input -p "+j.proto+" --dport "+re.sub('-', ':', j.num)+" -j SECMARK --selctx u:object_r:"+i.prefix+PACKET_INPUT
 			if mls:
 				line += ":"+j.mls_sens
 			elif mcs:
@@ -120,21 +120,21 @@ def print_input_rules(packets,mls,mcs):
 	print("post -A selinux_new_input -j RETURN")
 
 def print_output_rules(packets,mls,mcs):
-	line = "base -A selinux_new_output -j SECMARK --selctx system_u:object_r:"+DEFAULT_OUTPUT_PACKET
+	line = "base -A selinux_new_output -j SECMARK --selctx u:object_r:"+DEFAULT_OUTPUT_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
 		line += ":"+DEFAULT_MCS
 	print(line)
 
-	line = "base -A selinux_new_output -p icmp -j SECMARK --selctx system_u:object_r:"+ICMP_PACKET
+	line = "base -A selinux_new_output -p icmp -j SECMARK --selctx u:object_r:"+ICMP_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
 		line += ":"+DEFAULT_MCS
 	print(line)
 
-	line = "base -A selinux_new_output -p icmpv6 -j SECMARK --selctx system_u:object_r:"+ICMP_PACKET
+	line = "base -A selinux_new_output -p icmpv6 -j SECMARK --selctx u:object_r:"+ICMP_PACKET
 	if mls:
 		line += ":"+DEFAULT_MLS
 	elif mcs:
@@ -143,7 +143,7 @@ def print_output_rules(packets,mls,mcs):
 
 	for i in packets:
 		for j in i.ports:
-			line = "base -A selinux_new_output -p "+j.proto+" --dport "+re.sub('-', ':', j.num)+" -j SECMARK --selctx system_u:object_r:"+i.prefix+PACKET_OUTPUT
+			line = "base -A selinux_new_output -p "+j.proto+" --dport "+re.sub('-', ':', j.num)+" -j SECMARK --selctx u:object_r:"+i.prefix+PACKET_OUTPUT
 			if mls:
 				line += ":"+j.mls_sens
 			elif mcs:

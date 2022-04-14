@@ -58,7 +58,7 @@ attribute can_change_process_role;
 # object or a socket object on a create or relabel
 attribute can_change_object_identity;
 
-# [3] types that can change to system_u:system_r
+# [3] types that can change to u:r
 attribute can_system_change;
 
 # [4] types that have attribute 1 can change the SELinux
@@ -81,8 +81,8 @@ gen_require(`  #selint-disable:S-001
 	type unlabeled_t;
 ')
 
-neverallow { domain unlabeled_t } ~{ domain unlabeled_t }:process *;
-neverallow ~{ domain unlabeled_t } *:process *;
+#neverallow { domain unlabeled_t } ~{ domain unlabeled_t }:process *;
+#neverallow ~{ domain unlabeled_t } *:process *;
 
 ########################################
 #
@@ -122,12 +122,6 @@ ifdef(`hide_broken_symptoms',`
 	dontaudit domain self:udp_socket listen;
 ')
 
-ifdef(`init_systemd',`
-	optional_policy(`
-		shutdown_sigchld(domain)
-	')
-')
-
 tunable_policy(`global_ssp',`
 	# enable reading of urandom for all domains:
 	# this should be enabled when all programs
@@ -139,16 +133,6 @@ tunable_policy(`global_ssp',`
 optional_policy(`
 	libs_use_ld_so(domain)
 	libs_use_shared_libs(domain)
-')
-
-optional_policy(`
-	setrans_translate_context(domain)
-')
-
-# xdm passes an open file descriptor to xsession-errors.log which is then audited by all confined domains.
-optional_policy(`
-	xserver_dontaudit_use_xdm_fds(domain)
-	xserver_dontaudit_rw_xdm_pipes(domain)
 ')
 
 ########################################

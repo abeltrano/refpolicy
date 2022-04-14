@@ -83,40 +83,6 @@ interface(`unconfined_domain_noaudit',`
 		allow $1 self:process { execstack execmem };
 #		auditallow $1 self:process execstack;
 	')
-
-	optional_policy(`
-		auth_unconfined($1)
-	')
-
-	optional_policy(`
-		dbus_unconfined($1)
-	')
-
-	optional_policy(`
-		ipsec_setcontext_default_spd($1)
-		ipsec_match_default_spd($1)
-	')
-
-	optional_policy(`
-		nscd_unconfined($1)
-	')
-
-	optional_policy(`
-		postgresql_unconfined($1)
-	')
-
-	optional_policy(`
-		seutil_create_bin_policy($1)
-		seutil_relabelto_bin_policy($1)
-	')
-
-	optional_policy(`
-		storage_unconfined($1)
-	')
-
-	optional_policy(`
-		xserver_unconfined($1)
-	')
 ')
 
 ########################################

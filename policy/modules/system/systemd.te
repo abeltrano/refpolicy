@@ -85,7 +85,7 @@ type systemd_cgroups_t;
 type systemd_cgroups_exec_t;
 domain_type(systemd_cgroups_t)
 domain_entry_file(systemd_cgroups_t, systemd_cgroups_exec_t)
-role system_r types systemd_cgroups_t;
+role r types systemd_cgroups_t;
 
 type systemd_cgroups_runtime_t alias systemd_cgroups_var_run_t;
 files_runtime_file(systemd_cgroups_runtime_t)

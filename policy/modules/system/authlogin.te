@@ -31,7 +31,7 @@ logging_log_file(auth_cache_t)
 type chkpwd_t, can_read_shadow_passwords;
 type chkpwd_exec_t;
 application_domain(chkpwd_t, chkpwd_exec_t)
-role system_r types chkpwd_t;
+role r types chkpwd_t;
 
 type faillog_t;
 logging_log_file(faillog_t)
@@ -45,11 +45,11 @@ application_executable_file(login_exec_t)
 type pam_console_t;
 type pam_console_exec_t;
 init_system_domain(pam_console_t, pam_console_exec_t)
-role system_r types pam_console_t;
+role r types pam_console_t;
 
 type pam_t;
 domain_type(pam_t)
-role system_r types pam_t;
+role r types pam_t;
 
 type pam_exec_t;
 domain_entry_file(pam_t, pam_exec_t)
@@ -68,9 +68,9 @@ files_runtime_file(pam_var_console_t)
 
 type shadow_t;
 files_auth_file(shadow_t)
-neverallow ~can_read_shadow_passwords shadow_t:file read;
-neverallow ~can_write_shadow_passwords shadow_t:file { create write };
-neverallow ~can_relabelto_shadow_passwords shadow_t:file relabelto;
+#neverallow ~can_read_shadow_passwords shadow_t:file read;
+#neverallow ~can_write_shadow_passwords shadow_t:file { create write };
+#neverallow ~can_relabelto_shadow_passwords shadow_t:file relabelto;
 
 type shadow_lock_t;
 files_lock_file(shadow_lock_t)
@@ -80,7 +80,7 @@ type updpwd_exec_t;
 domain_type(updpwd_t)
 domain_entry_file(updpwd_t, updpwd_exec_t)
 domain_obj_id_change_exemption(updpwd_t)
-role system_r types updpwd_t;
+role r types updpwd_t;
 
 type utempter_t;
 type utempter_exec_t;
@@ -149,25 +149,6 @@ seutil_dontaudit_use_newrole_fds(chkpwd_t)
 
 userdom_use_user_terminals(chkpwd_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(chkpwd_t)
-	')
-')
-
-optional_policy(`
-	# apache leaks file descriptors
-	apache_dontaudit_rw_tcp_sockets(chkpwd_t)
-')
-
-optional_policy(`
-	kerberos_use(chkpwd_t)
-')
-
-optional_policy(`
-	nis_authenticate(chkpwd_t)
-')
-
 ########################################
 #
 # PAM local policy
@@ -212,12 +193,6 @@ init_dontaudit_rw_utmp(pam_t)
 
 logging_send_syslog_msg(pam_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(pam_t)
-	')
-')
-
 optional_policy(`
 	locallogin_use_fds(pam_t)
 ')
@@ -251,10 +226,6 @@ tunable_policy(`authlogin_pam',`
 	dontaudit pam_domain shadow_t:file read_file_perms;
 ',`
 	allow pam_domain shadow_t:file read_file_perms;
-')
-
-optional_policy(`
-	nis_authenticate(pam_domain)
 ')
 
 ########################################
@@ -351,24 +322,8 @@ seutil_read_file_contexts(pam_console_t)
 
 userdom_dontaudit_use_unpriv_user_fds(pam_console_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(pam_console_t)
-	')
-')
-
-optional_policy(`
-	gpm_getattr_gpmctl(pam_console_t)
-	gpm_setattr_gpmctl(pam_console_t)
-')
-
 optional_policy(`
 	seutil_sigchld_newrole(pam_console_t)
-')
-
-optional_policy(`
-	xserver_read_xdm_runtime_files(pam_console_t)
-	xserver_dontaudit_write_log(pam_console_t)
 ')
 
 ########################################
@@ -400,12 +355,6 @@ miscfiles_read_localization(updpwd_t)
 
 userdom_use_user_terminals(updpwd_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(updpwd_t)
-	')
-')
-
 ########################################
 #
 # Utempter local policy
@@ -435,83 +384,3 @@ logging_search_logs(utempter_t)
 userdom_use_user_terminals(utempter_t)
 # Allow utemper to write to /tmp/.xses-*
 userdom_write_user_tmp_files(utempter_t)
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(utempter_t)
-	')
-')
-
-optional_policy(`
-	nscd_use(utempter_t)
-')
-
-optional_policy(`
-	xserver_use_xdm_fds(utempter_t)
-	xserver_rw_xdm_pipes(utempter_t)
-')
-
-#######################################
-#
-# nsswitch_domain local policy
-#
-
-allow nsswitch_domain self:key manage_key_perms;
-
-files_list_var_lib(nsswitch_domain)
-
-# read /etc/nsswitch.conf
-files_read_etc_files(nsswitch_domain)
-
-sysnet_dns_name_resolve(nsswitch_domain)
-
-ifdef(`init_systemd', `
-	systemd_stream_connect_userdb(nsswitch_domain)
-')
-
-tunable_policy(`authlogin_nsswitch_use_ldap',`
-	miscfiles_read_generic_certs(nsswitch_domain)
-	sysnet_use_ldap(nsswitch_domain)
-',`
-	miscfiles_dontaudit_read_generic_certs(nsswitch_domain)
-')
-
-optional_policy(`
-	tunable_policy(`authlogin_nsswitch_use_ldap',`
-		ldap_stream_connect(nsswitch_domain)
-	')
-')
-
-optional_policy(`
-	avahi_stream_connect(nsswitch_domain)
-')
-
-optional_policy(`
-	likewise_stream_connect_lsassd(nsswitch_domain)
-')
-
-optional_policy(`
-	kerberos_use(nsswitch_domain)
-')
-
-optional_policy(`
-	nis_use_ypbind(nsswitch_domain)
-')
-
-optional_policy(`
-	nscd_use(nsswitch_domain)
-')
-
-optional_policy(`
-	nslcd_stream_connect(nsswitch_domain)
-')
-
-optional_policy(`
-	sssd_stream_connect(nsswitch_domain)
-')
-
-optional_policy(`
-	samba_stream_connect_winbind(nsswitch_domain)
-	samba_read_var_files(nsswitch_domain)
-	samba_dontaudit_write_var_files(nsswitch_domain)
-')

@@ -28,7 +28,7 @@ attribute proc_type;
 # sysctls
 attribute sysctl_type;
 
-role system_r;
+role r;
 role sysadm_r;
 role staff_r;
 role user_r;
@@ -47,8 +47,8 @@ ifdef(`enable_mls',`
 #
 type kernel_t, can_load_kernmodule;
 domain_base_type(kernel_t)
-role system_r types kernel_t;
-sid kernel gen_context(system_u:system_r:kernel_t,mls_systemhigh)
+role r types kernel_t;
+# sid kernel gen_context(u:r:kernel_t,mls_systemhigh)
 
 #
 # DebugFS
@@ -58,7 +58,7 @@ type debugfs_t;
 files_mountpoint(debugfs_t)
 fs_type(debugfs_t)
 allow debugfs_t self:filesystem associate;
-genfscon debugfs / gen_context(system_u:object_r:debugfs_t,s0)
+# genfscon debugfs / gen_context(u:object_r:debugfs_t,s0)
 
 #
 # kvmFS
@@ -66,7 +66,7 @@ genfscon debugfs / gen_context(system_u:object_r:debugfs_t,s0)
 
 type kvmfs_t;
 fs_type(kvmfs_t)
-genfscon kvmfs / gen_context(system_u:object_r:kvmfs_t,s0)
+# genfscon kvmfs / gen_context(u:object_r:kvmfs_t,s0)
 
 #
 # Procfs types
@@ -75,15 +75,16 @@ genfscon kvmfs / gen_context(system_u:object_r:kvmfs_t,s0)
 type proc_t, proc_type;
 files_mountpoint(proc_t)
 fs_type(proc_t)
-genfscon proc / gen_context(system_u:object_r:proc_t,s0)
-genfscon proc /sysvipc gen_context(system_u:object_r:proc_t,s0)
+# Removed for WSL
+#genfscon proc / gen_context(u:object_r:proc_t,s0)
+#genfscon proc /sysvipc gen_context(u:object_r:proc_t,s0)
 
 type proc_afs_t, proc_type;
-genfscon proc /fs/openafs gen_context(system_u:object_r:proc_afs_t,s0)
+# genfscon proc /fs/openafs gen_context(u:object_r:proc_afs_t,s0)
 
 # kernel message interface
 type proc_kmsg_t, proc_type;
-genfscon proc /kmsg gen_context(system_u:object_r:proc_kmsg_t,mls_systemhigh)
+# genfscon proc /kmsg gen_context(u:object_r:proc_kmsg_t,mls_systemhigh)
 neverallow ~{ can_receive_kernel_messages kern_unconfined } proc_kmsg_t:file read;
 
 optional_policy(`
@@ -93,21 +94,21 @@ optional_policy(`
 # /proc kcore: inaccessible
 type proc_kcore_t, proc_type;
 neverallow ~{ can_dump_kernel kern_unconfined } proc_kcore_t:file ~{ getattr mounton };
-genfscon proc /kcore gen_context(system_u:object_r:proc_kcore_t,mls_systemhigh)
+# genfscon proc /kcore gen_context(u:object_r:proc_kcore_t,mls_systemhigh)
 
 optional_policy(`
 	init_mountpoint(proc_kcore_t)
 ')
 
 type proc_mdstat_t, proc_type;
-genfscon proc /mdstat gen_context(system_u:object_r:proc_mdstat_t,s0)
+# genfscon proc /mdstat gen_context(u:object_r:proc_mdstat_t,s0)
 
 type proc_net_t, proc_type;
-genfscon proc /net gen_context(system_u:object_r:proc_net_t,s0)
+# genfscon proc /net gen_context(u:object_r:proc_net_t,s0)
 
 type proc_xen_t, proc_type;
 files_mountpoint(proc_xen_t)
-genfscon proc /xen gen_context(system_u:object_r:proc_xen_t,s0)
+# genfscon proc /xen gen_context(u:object_r:proc_xen_t,s0)
 
 #
 # Sysctl types
@@ -116,12 +117,12 @@ genfscon proc /xen gen_context(system_u:object_r:proc_xen_t,s0)
 # /proc/sys directory, base directory of sysctls
 type sysctl_t, sysctl_type;
 files_mountpoint(sysctl_t)
-sid sysctl gen_context(system_u:object_r:sysctl_t,s0)
-genfscon proc /sys gen_context(system_u:object_r:sysctl_t,s0)
+# sid sysctl gen_context(u:object_r:sysctl_t,s0)
+# genfscon proc /sys gen_context(u:object_r:sysctl_t,s0)
 
 # /proc/irq directory and files
 type sysctl_irq_t, sysctl_type;
-genfscon proc /irq gen_context(system_u:object_r:sysctl_irq_t,s0)
+# genfscon proc /irq gen_context(u:object_r:sysctl_irq_t,s0)
 
 optional_policy(`
 	init_mountpoint(sysctl_irq_t)
@@ -129,20 +130,20 @@ optional_policy(`
 
 # /proc/net/rpc directory and files
 type sysctl_rpc_t, sysctl_type;
-genfscon proc /net/rpc gen_context(system_u:object_r:sysctl_rpc_t,s0)
+# genfscon proc /net/rpc gen_context(u:object_r:sysctl_rpc_t,s0)
 
 # /proc/sys/crypto directory and files
 type sysctl_crypto_t, sysctl_type;
-genfscon proc /sys/crypto gen_context(system_u:object_r:sysctl_crypto_t,s0)
+# genfscon proc /sys/crypto gen_context(u:object_r:sysctl_crypto_t,s0)
 
 # /proc/sys/fs directory and files
 type sysctl_fs_t, sysctl_type;
 files_mountpoint(sysctl_fs_t)
-genfscon proc /sys/fs gen_context(system_u:object_r:sysctl_fs_t,s0)
+# genfscon proc /sys/fs gen_context(u:object_r:sysctl_fs_t,s0)
 
 # /proc/sys/kernel directory and files
 type sysctl_kernel_t, sysctl_type;
-genfscon proc /sys/kernel gen_context(system_u:object_r:sysctl_kernel_t,s0)
+# genfscon proc /sys/kernel gen_context(u:object_r:sysctl_kernel_t,s0)
 
 optional_policy(`
 	init_mountpoint(sysctl_kernel_t)
@@ -150,34 +151,34 @@ optional_policy(`
 
 # /sys/kernel/ns_last_pid file
 type sysctl_kernel_ns_last_pid_t, sysctl_type;
-genfscon proc /sys/kernel/ns_last_pid gen_context(system_u:object_r:sysctl_kernel_ns_last_pid_t,s0)
+# genfscon proc /sys/kernel/ns_last_pid gen_context(u:object_r:sysctl_kernel_ns_last_pid_t,s0)
 
 # /proc/sys/kernel/modprobe file
 type sysctl_modprobe_t, sysctl_type;
-genfscon proc /sys/kernel/modprobe gen_context(system_u:object_r:sysctl_modprobe_t,s0)
+# genfscon proc /sys/kernel/modprobe gen_context(u:object_r:sysctl_modprobe_t,s0)
 
 # /proc/sys/kernel/hotplug file
 type sysctl_hotplug_t, sysctl_type;
-genfscon proc /sys/kernel/hotplug gen_context(system_u:object_r:sysctl_hotplug_t,s0)
+# genfscon proc /sys/kernel/hotplug gen_context(u:object_r:sysctl_hotplug_t,s0)
 
 # /proc/sys/net directory and files
 type sysctl_net_t, sysctl_type;
-genfscon proc /sys/net gen_context(system_u:object_r:sysctl_net_t,s0)
+# genfscon proc /sys/net gen_context(u:object_r:sysctl_net_t,s0)
 
 # /proc/sys/net/unix directory and files
 type sysctl_net_unix_t, sysctl_type;
-genfscon proc /sys/net/unix gen_context(system_u:object_r:sysctl_net_unix_t,s0)
+# genfscon proc /sys/net/unix gen_context(u:object_r:sysctl_net_unix_t,s0)
 
 # /proc/sys/vm directory and files
 type sysctl_vm_t, sysctl_type;
-genfscon proc /sys/vm gen_context(system_u:object_r:sysctl_vm_t,s0)
+# genfscon proc /sys/vm gen_context(u:object_r:sysctl_vm_t,s0)
 
 type sysctl_vm_overcommit_t, sysctl_type;
-genfscon proc /sys/vm/overcommit_memory gen_context(system_u:object_r:sysctl_vm_overcommit_t,s0)
+# genfscon proc /sys/vm/overcommit_memory gen_context(u:object_r:sysctl_vm_overcommit_t,s0)
 
 # /proc/sys/dev directory and files
 type sysctl_dev_t, sysctl_type;
-genfscon proc /sys/dev gen_context(system_u:object_r:sysctl_dev_t,s0)
+# genfscon proc /sys/dev gen_context(u:object_r:sysctl_dev_t,s0)
 
 #
 # unlabeled_t is the type of unlabeled objects.
@@ -189,31 +190,50 @@ genfscon proc /sys/dev gen_context(system_u:object_r:sysctl_dev_t,s0)
 # where filesystems are mounted may never get relabeled.
 #
 type unlabeled_t;
-kernel_rootfs_mountpoint(unlabeled_t)
-fs_associate(unlabeled_t)
-sid file gen_context(system_u:object_r:unlabeled_t,s0)
-sid unlabeled gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
+# kernel_rootfs_mountpoint(unlabeled_t)
+# fs_associate(unlabeled_t)
+# sid file gen_context(u:object_r:unlabeled_t,s0)
+# sid unlabeled gen_context(u:object_r:unlabeled_t,mls_systemhigh)
 
 # Disable for WSL
 # neverallow * unlabeled_t:file entrypoint;
 
 # These initial sids are no longer used, and can be removed:
-sid any_socket		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid file_labels		gen_context(system_u:object_r:unlabeled_t,s0)
-sid icmp_socket		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid igmp_packet		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid init		gen_context(system_u:object_r:unlabeled_t,s0)
-sid kmod		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid policy		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid scmp_packet		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
-sid sysctl_modprobe 	gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_fs		gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_kernel	gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_net		gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_net_unix	gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_vm		gen_context(system_u:object_r:unlabeled_t,s0)
-sid sysctl_dev		gen_context(system_u:object_r:unlabeled_t,s0)
-sid tcp_socket		gen_context(system_u:object_r:unlabeled_t,mls_systemhigh)
+# sid any_socket		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid file_labels		gen_context(u:object_r:unlabeled_t,s0)
+# sid icmp_socket		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid igmp_packet		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid init		gen_context(u:object_r:unlabeled_t,s0)
+# sid kmod		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid policy		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid scmp_packet		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+# sid sysctl_modprobe 	gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_fs		gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_kernel	gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_net		gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_net_unix	gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_vm		gen_context(u:object_r:unlabeled_t,s0)
+# sid sysctl_dev		gen_context(u:object_r:unlabeled_t,s0)
+# sid tcp_socket		gen_context(u:object_r:unlabeled_t,mls_systemhigh)
+
+# Converted for Android
+# sid any_socket		gen_context(u:object_r:unlabeled,s0)
+# sid file_labels		gen_context(u:object_r:unlabeled,s0)
+# sid icmp_socket		gen_context(u:object_r:unlabeled,s0)
+# sid igmp_packet		gen_context(u:object_r:unlabeled,s0)
+# sid init		gen_context(u:object_r:unlabeled,s0)
+# sid kmod		gen_context(u:object_r:unlabeled,s0)
+# sid policy		gen_context(u:object_r:unlabeled,s0)
+# sid scmp_packet		gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_modprobe 	gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_fs		gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_kernel	gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_net		gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_net_unix	gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_vm		gen_context(u:object_r:unlabeled,s0)
+# sid sysctl_dev		gen_context(u:object_r:unlabeled,s0)
+# sid tcp_socket		gen_context(u:object_r:unlabeled,s0)
+
 
 ########################################
 #
@@ -267,7 +287,7 @@ kernel_request_load_module(kernel_t)
 # Allow unlabeled network traffic
 allow unlabeled_t self:packet { forward_in forward_out };
 corenet_in_generic_if(unlabeled_t)
-corenet_in_generic_node(unlabeled_t)
+# corenet_in_generic_node(unlabeled_t)
 
 corenet_all_recvfrom_unlabeled(kernel_t)
 corenet_all_recvfrom_netlabel(kernel_t)
@@ -278,7 +298,6 @@ corenet_raw_send_generic_if(kernel_t)
 # Kernel-generated traffic e.g., TCP resets:
 corenet_tcp_sendrecv_all_if(kernel_t)
 corenet_tcp_sendrecv_all_nodes(kernel_t)
-corenet_raw_send_generic_node(kernel_t)
 corenet_send_all_packets(kernel_t)
 
 corenet_ib_access_all_pkeys(kernel_t)
@@ -359,34 +378,6 @@ mls_process_write_all_levels(kernel_t)
 mls_file_write_all_levels(kernel_t)
 mls_file_read_all_levels(kernel_t)
 
-ifdef(`distro_redhat',`
-	# Bugzilla 222337
-	fs_rw_tmpfs_chr_files(kernel_t)
-')
-
-ifdef(`init_systemd',`
-	optional_policy(`
-		dev_manage_input_dev(kernel_t)
-		dev_filetrans_input_dev(kernel_t)
-	')
-
-	optional_policy(`
-		selinux_compute_create_context(kernel_t)
-	')
-
-	optional_policy(`
-		storage_dev_filetrans_fixed_disk(kernel_t)
-		storage_setattr_fixed_disk_dev(kernel_t)
-		storage_create_fixed_disk_dev(kernel_t)
-		storage_delete_fixed_disk_dev(kernel_t)
-	')
-')
-
-optional_policy(`
-	# loop devices
-	fstools_use_fds(kernel_t)
-')
-
 optional_policy(`
 	init_sigchld(kernel_t)
 ')
@@ -406,79 +397,16 @@ optional_policy(`
 ')
 
 optional_policy(`
-	nis_use_ypbind(kernel_t)
-')
-
-optional_policy(`
 	dev_ioctl_dri_dev(kernel_t)
-
-	plymouthd_delete_runtime_files(kernel_t)
-	plymouthd_read_runtime_files(kernel_t)
-	plymouthd_read_spool_files(kernel_t)
-	plymouthd_rw_lib_files(kernel_t)
 
 	term_use_ptmx(kernel_t)
 	term_use_unallocated_ttys(kernel_t)
 ')
 
 optional_policy(`
-	# nfs kernel server needs kernel UDP access. It is less risky and painful
-	# to just give it everything.
-	allow kernel_t self:tcp_socket create_stream_socket_perms;
-	allow kernel_t self:udp_socket create_socket_perms;
-
-	# nfs kernel server needs kernel UDP access. It is less risky and painful
-	# to just give it everything.
-	corenet_udp_sendrecv_generic_if(kernel_t)
-	corenet_udp_sendrecv_generic_node(kernel_t)
-	corenet_udp_bind_generic_node(kernel_t)
-	corenet_sendrecv_portmap_client_packets(kernel_t)
-	corenet_sendrecv_generic_server_packets(kernel_t)
-
-	fs_getattr_xattr_fs(kernel_t)
-
-	auth_dontaudit_getattr_shadow(kernel_t)
-
-	sysnet_read_config(kernel_t)
-
-	rpc_manage_nfs_ro_content(kernel_t)
-	rpc_manage_nfs_rw_content(kernel_t)
-	rpc_tcp_rw_nfs_sockets(kernel_t)
-	rpc_udp_rw_nfs_sockets(kernel_t)
-
-	optional_policy(`
-		gssproxy_stream_connect(kernel_t)
-	')
-
-	tunable_policy(`nfs_export_all_ro',`
-		fs_getattr_noxattr_fs(kernel_t)
-		fs_list_noxattr_fs(kernel_t)
-		fs_read_noxattr_fs_files(kernel_t)
-		fs_read_noxattr_fs_symlinks(kernel_t)
-
-		files_list_non_auth_dirs(kernel_t)
-		files_read_non_auth_files(kernel_t)
-		files_read_non_auth_symlinks(kernel_t)
-	')
-
-	tunable_policy(`nfs_export_all_rw',`
-		fs_getattr_noxattr_fs(kernel_t)
-		fs_list_noxattr_fs(kernel_t)
-		fs_read_noxattr_fs_files(kernel_t)
-		fs_read_noxattr_fs_symlinks(kernel_t)
-
-		files_manage_non_auth_files(kernel_t)
-	')
-')
-
-optional_policy(`
 	seutil_read_config(kernel_t)
 	seutil_read_bin_policy(kernel_t)
 	seutil_domtrans_setfiles(kernel_t)
-')
-
-optional_policy(`
-	unconfined_domain_noaudit(kernel_t)
 ')
 
 ########################################
@@ -554,4 +482,8 @@ allow kern_unconfined unlabeled_t:packet { send recv relabelto forward_in forwar
 allow kern_unconfined unlabeled_t:process { fork signal_perms ptrace getsched setsched getsession getpgid setpgid getcap setcap share getattr setexec setfscreate noatsecure siginh setrlimit rlimitinh setcurrent setkeycreate setsockcreate getrlimit };
 
 # Added for WSL
-allow kernel_t wsl_init_t:process dyntransition;
+allow kernel_t wsl_init_t:process { dyntransition setcurrent };
+allow kernel_t init_exec:file entrypoint;
+
+domain_subj_id_change_exemption(kernel_t)
+domain_role_change_exemption(kernel_t)

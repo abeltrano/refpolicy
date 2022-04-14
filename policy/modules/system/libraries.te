@@ -20,7 +20,7 @@ files_type(ld_so_t)
 type ldconfig_t;
 type ldconfig_exec_t;
 init_system_domain(ldconfig_t, ldconfig_exec_t)
-role system_r types ldconfig_t;
+role r types ldconfig_t;
 
 type ldconfig_cache_t;
 files_type(ldconfig_cache_t)
@@ -45,11 +45,6 @@ ifdef(`distro_gentoo',`
 	# openrc unfortunately mounts a tmpfs
 	# at /lib/rc/
 	files_mountpoint(lib_t)
-')
-
-optional_policy(`
-	postgresql_loadable_module(lib_t)
-	postgresql_loadable_module(textrel_shlib_t)
 ')
 
 ########################################
@@ -93,55 +88,11 @@ init_read_script_tmp_files(ldconfig_t)
 
 miscfiles_read_localization(ldconfig_t)
 
-logging_send_syslog_msg(ldconfig_t)
-
 userdom_use_user_terminals(ldconfig_t)
 userdom_use_all_users_fds(ldconfig_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(ldconfig_t)
-	')
-')
-
 ifdef(`hide_broken_symptoms',`
-	ifdef(`distro_gentoo',`
-		# leaked fds from portage
-		files_dontaudit_rw_var_files(ldconfig_t)
-
-		optional_policy(`
-			portage_dontaudit_search_tmp(ldconfig_t)
-			portage_dontaudit_rw_tmp_files(ldconfig_t)
-		')
-	')
-
 	optional_policy(`
 		unconfined_dontaudit_rw_tcp_sockets(ldconfig_t)
 	')
-')
-
-optional_policy(`
-	# dontaudit access to /usr/lib/apache, normal programs cannot read these libs anyway
-	apache_dontaudit_search_modules(ldconfig_t)
-')
-
-optional_policy(`
-	apt_rw_pipes(ldconfig_t)
-	apt_use_fds(ldconfig_t)
-	apt_use_ptys(ldconfig_t)
-')
-
-optional_policy(`
-	puppet_rw_tmp(ldconfig_t)
-')
-
-optional_policy(`
-	# When you install a kernel the postinstall builds a initrd image in tmp
-	# and executes ldconfig on it. If you dont allow this kernel installs
-	# blow up.
-	rpm_manage_script_tmp_files(ldconfig_t)
-')
-
-optional_policy(`
-	unconfined_domain(ldconfig_t)
 ')

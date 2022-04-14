@@ -14,7 +14,7 @@ policy_module(sysnetwork)
 gen_tunable(dhcpc_manage_samba, false)
 
 attribute_role dhcpc_roles;
-roleattribute system_r dhcpc_roles;
+roleattribute r dhcpc_roles;
 
 # this is shared between dhcpc and dhcpd:
 type dhcp_etc_t;
@@ -41,7 +41,7 @@ files_tmp_file(dhcpc_tmp_t)
 type ifconfig_t;
 type ifconfig_exec_t;
 init_system_domain(ifconfig_t, ifconfig_exec_t)
-role system_r types ifconfig_t;
+role r types ifconfig_t;
 
 type ifconfig_runtime_t;
 files_runtime_file(ifconfig_runtime_t)
@@ -154,122 +154,10 @@ term_dontaudit_use_generic_ptys(dhcpc_t)
 
 init_rw_utmp(dhcpc_t)
 
-logging_send_syslog_msg(dhcpc_t)
-
-miscfiles_read_localization(dhcpc_t)
-# dhclient reads /etc/ssl
-miscfiles_read_generic_certs(dhcpc_t)
-
 sysnet_run_ifconfig(dhcpc_t, dhcpc_roles)
 
 userdom_use_user_terminals(dhcpc_t)
 userdom_dontaudit_search_user_home_dirs(dhcpc_t)
-
-ifdef(`distro_redhat', `
-	files_exec_etc_files(dhcpc_t)
-')
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(dhcpc_t)
-	')
-')
-
-ifdef(`init_systemd',`
-	init_rw_stream_sockets(dhcpc_t)
-	init_read_state(dhcpc_t)
-	init_stream_connect(dhcpc_t)
-	init_get_all_units_status(dhcpc_t)
-	init_search_units(dhcpc_t)
-')
-
-optional_policy(`
-	avahi_domtrans(dhcpc_t)
-')
-
-optional_policy(`
-	consoletype_run(dhcpc_t, dhcpc_roles)
-')
-
-optional_policy(`
-	dbus_system_domain(dhcpc_t, dhcpc_exec_t)
-
-	init_dbus_chat_script(dhcpc_t)
-
-	optional_policy(`
-		networkmanager_dbus_chat(dhcpc_t)
-	')
-')
-
-optional_policy(`
-	hostname_run(dhcpc_t, dhcpc_roles)
-')
-
-optional_policy(`
-	modutils_run(dhcpc_t, dhcpc_roles)
-')
-
-# for the dhcp client to run ping to check IP addresses
-optional_policy(`
-	netutils_run_ping(dhcpc_t, dhcpc_roles)
-	netutils_run(dhcpc_t, dhcpc_roles)
-')
-
-optional_policy(`
-	networkmanager_domtrans(dhcpc_t)
-	networkmanager_read_runtime_files(dhcpc_t)
-	networkmanager_manage_lib_files(dhcpc_t)
-	networkmanager_stream_connect(dhcpc_t)
-')
-
-optional_policy(`
-	nis_read_ypbind_runtime_files(dhcpc_t)
-')
-
-optional_policy(`
-	nscd_initrc_domtrans(dhcpc_t)
-	nscd_domtrans(dhcpc_t)
-	nscd_read_runtime_files(dhcpc_t)
-')
-
-optional_policy(`
-	ntp_initrc_domtrans(dhcpc_t)
-	ntp_read_drift_files(dhcpc_t)
-	ntp_read_conf_files(dhcpc_t)
-')
-
-optional_policy(`
-	tunable_policy(`dhcpc_manage_samba',`
-		samba_manage_config(dhcpc_t)
-		samba_manage_var_files(dhcpc_t)
-		init_exec_script_files(dhcpc_t)
-		init_get_system_status(dhcpc_t)
-		samba_stop(dhcpc_t)
-		samba_start(dhcpc_t)
-		samba_reload(dhcpc_t)
-		samba_status(dhcpc_t)
-	')
-')
-
-optional_policy(`
-	seutil_sigchld_newrole(dhcpc_t)
-	seutil_dontaudit_search_config(dhcpc_t)
-')
-
-optional_policy(`
-	userdom_use_all_users_fds(dhcpc_t)
-')
-
-optional_policy(`
-	vmware_append_log(dhcpc_t)
-')
-
-optional_policy(`
-	kernel_read_xen_state(dhcpc_t)
-	kernel_write_xen_state(dhcpc_t)
-	xen_append_log(dhcpc_t)
-	xen_dontaudit_rw_unix_stream_sockets(dhcpc_t)
-')
 
 ########################################
 #
@@ -346,28 +234,12 @@ files_dontaudit_read_root_files(ifconfig_t)
 init_use_fds(ifconfig_t)
 init_use_script_ptys(ifconfig_t)
 
-logging_send_syslog_msg(ifconfig_t)
-
-miscfiles_read_localization(ifconfig_t)
-
-seutil_use_runinit_fds(ifconfig_t)
-
 sysnet_dontaudit_rw_dhcpc_udp_sockets(ifconfig_t)
 
 # For "ip netns identify $$"
 userdom_read_all_users_state(ifconfig_t)
 userdom_use_user_terminals(ifconfig_t)
 userdom_use_all_users_fds(ifconfig_t)
-
-ifdef(`distro_debian',`
-	term_dontaudit_use_unallocated_ttys(ifconfig_t)
-')
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(ifconfig_t)
-	')
-')
 
 ifdef(`hide_broken_symptoms',`
 	optional_policy(`
@@ -377,41 +249,4 @@ ifdef(`hide_broken_symptoms',`
 	optional_policy(`
 		udev_dontaudit_rw_dgram_sockets(ifconfig_t)
 	')
-')
-
-optional_policy(`
-	devicekit_read_runtime_files(ifconfig_t)
-	devicekit_append_inherited_log_files(ifconfig_t)
-')
-
-optional_policy(`
-	ipsec_write_runtime_files(ifconfig_t)
-	ipsec_setcontext_default_spd(ifconfig_t)
-')
-
-optional_policy(`
-	modutils_domtrans(ifconfig_t)
-')
-
-optional_policy(`
-	nis_use_ypbind(ifconfig_t)
-')
-
-optional_policy(`
-	ppp_use_fds(ifconfig_t)
-')
-
-optional_policy(`
-	unconfined_dontaudit_rw_pipes(ifconfig_t)
-')
-
-optional_policy(`
-	vmware_append_log(ifconfig_t)
-')
-
-optional_policy(`
-	kernel_read_xen_state(ifconfig_t)
-	kernel_write_xen_state(ifconfig_t)
-	xen_append_log(ifconfig_t)
-	xen_dontaudit_rw_unix_stream_sockets(ifconfig_t)
 ')

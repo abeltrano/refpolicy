@@ -1,0 +1,2 @@
+
+/usr/bin/sudo(edit)?	--	gen_context(u:object_r:sudo_exec_t,s0)

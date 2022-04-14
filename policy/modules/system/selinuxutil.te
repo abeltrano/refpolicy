@@ -15,10 +15,10 @@ attribute can_relabelto_binary_policy;
 attribute_role newrole_roles;
 
 attribute_role run_init_roles;
-role system_r types run_init_t;
+role r types run_init_t;
 
 attribute_role semanage_roles;
-roleattribute system_r semanage_roles;
+roleattribute r semanage_roles;
 
 #
 # selinux_config_t is the type applied to
@@ -33,7 +33,7 @@ files_type(selinux_config_t)
 type checkpolicy_t, can_write_binary_policy;
 type checkpolicy_exec_t;
 application_domain(checkpolicy_t, checkpolicy_exec_t)
-role system_r types checkpolicy_t;
+role r types checkpolicy_t;
 
 #
 # default_context_t is the type applied to
@@ -52,7 +52,7 @@ files_type(file_context_t)
 type load_policy_t;
 type load_policy_exec_t;
 application_domain(load_policy_t, load_policy_exec_t)
-role system_r types load_policy_t;
+role r types load_policy_t;
 
 type newrole_t;
 type newrole_exec_t;
@@ -69,7 +69,7 @@ role newrole_roles types newrole_t;
 type policy_config_t;
 files_security_file(policy_config_t)
 
-neverallow ~can_relabelto_binary_policy policy_config_t:file relabelto;
+#neverallow ~can_relabelto_binary_policy policy_config_t:file relabelto;
 #neverallow ~can_write_binary_policy policy_config_t:file { write append };
 
 #
@@ -83,7 +83,7 @@ type restorecond_t;
 type restorecond_exec_t;
 init_daemon_domain(restorecond_t, restorecond_exec_t)
 domain_obj_id_change_exemption(restorecond_t)
-role system_r types restorecond_t;
+role r types restorecond_t;
 
 type restorecond_unit_t;
 init_unit_file(restorecond_unit_t)
@@ -215,10 +215,6 @@ ifdef(`hide_broken_symptoms',`
 	')
 ')
 
-optional_policy(`
-	portage_dontaudit_use_fds(load_policy_t)
-')
-
 ########################################
 #
 # Newrole local policy
@@ -280,8 +276,6 @@ term_getattr_unallocated_ttys(newrole_t)
 term_dontaudit_use_unallocated_ttys(newrole_t)
 
 auth_use_nsswitch(newrole_t)
-auth_run_chk_passwd(newrole_t, newrole_roles)
-auth_run_upd_passwd(newrole_t, newrole_roles)
 auth_rw_faillog(newrole_t)
 
 # Write to utmp.
@@ -295,29 +289,7 @@ miscfiles_read_localization(newrole_t)
 seutil_libselinux_linked(newrole_t)
 
 # for some PAM modules and for cwd
-userdom_dontaudit_search_user_home_content(newrole_t)
 userdom_search_user_home_dirs(newrole_t)
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(newrole_t)
-	')
-')
-
-ifdef(`init_systemd',`
-	optional_policy(`
-		systemd_use_logind_fds(newrole_t)
-		systemd_dbus_chat_logind(newrole_t)
-	')
-')
-
-optional_policy(`
-	auth_use_pam_systemd(newrole_t)
-')
-
-optional_policy(`
-	dbus_system_bus_client(newrole_t)
-')
 
 # if secure mode is enabled, then newrole
 # can only transition to unprivileged users
@@ -385,26 +357,12 @@ miscfiles_read_localization(restorecond_t)
 seutil_libselinux_linked(restorecond_t)
 seutil_read_default_contexts(restorecond_t)
 
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(restorecond_t)
-	')
-')
-
-optional_policy(`
-	locallogin_dontaudit_use_fds(restorecond_t)
-')
-
-optional_policy(`
-	rpm_use_script_fds(restorecond_t)
-')
-
 #################################
 #
 # Run_init local policy
 #
 
-allow run_init_roles system_r;
+allow run_init_roles r;
 
 allow run_init_t self:process setexec;
 allow run_init_t self:capability setuid;
@@ -437,8 +395,6 @@ selinux_compute_relabel_context(run_init_t)
 selinux_compute_user_contexts(run_init_t)
 
 auth_use_nsswitch(run_init_t)
-auth_run_chk_passwd(run_init_t, run_init_roles)
-auth_run_upd_passwd(run_init_t, run_init_roles)
 auth_dontaudit_read_shadow(run_init_t)
 
 init_spec_domtrans_script(run_init_t)
@@ -453,25 +409,6 @@ seutil_libselinux_linked(run_init_t)
 seutil_read_default_contexts(run_init_t)
 
 userdom_use_user_terminals(run_init_t)
-
-ifndef(`direct_sysadm_daemon',`
-	ifdef(`distro_gentoo',`
-		# Gentoo integrated run_init:
-		init_script_file_entry_type(run_init_t)
-
-		init_exec_rc(run_init_t)
-	')
-')
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(run_init_t)
-	')
-')
-
-optional_policy(`
-	daemontools_domtrans_start(run_init_t)
-')
 
 ########################################
 #
@@ -548,28 +485,6 @@ userdom_read_user_home_content_files(semanage_t)
 userdom_map_user_home_content_files(semanage_t)
 userdom_read_user_tmp_files(semanage_t)
 userdom_map_user_tmp_files(semanage_t)
-
-ifdef(`distro_debian',`
-	files_read_var_lib_files(semanage_t)
-	files_read_var_lib_symlinks(semanage_t)
-')
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(semanage_t)
-	')
-')
-
-ifdef(`init_systemd',`
-	optional_policy(`
-		init_dbus_chat(semanage_t)
-		dbus_system_bus_client(semanage_t)
-	')
-')
-
-optional_policy(`
-	locallogin_use_fds(semanage_t)
-')
 
 ########################################
 #
@@ -663,26 +578,6 @@ userdom_use_all_users_fds(setfiles_t)
 # for config files in a home directory
 userdom_read_user_home_content_files(setfiles_t)
 
-ifdef(`distro_debian',`
-	# udev tmpfs is populated with static device nodes
-	# and then relabeled afterwards; thus
-	# /dev/console has the tmpfs type
-	fs_rw_tmpfs_chr_files(setfiles_t)
-')
-
-ifdef(`distro_redhat', `
-	fs_rw_tmpfs_chr_files(setfiles_t)
-	fs_rw_tmpfs_blk_files(setfiles_t)
-	fs_relabel_tmpfs_blk_files(setfiles_t)
-	fs_relabel_tmpfs_chr_files(setfiles_t)
-')
-
-ifdef(`distro_ubuntu',`
-	optional_policy(`
-		unconfined_domain(setfiles_t)
-	')
-')
-
 ifdef(`hide_broken_symptoms',`
 	optional_policy(`
 		udev_dontaudit_rw_dgram_sockets(setfiles_t)
@@ -693,8 +588,4 @@ ifdef(`hide_broken_symptoms',`
 		unconfined_dontaudit_read_pipes(setfiles_t)
 		unconfined_dontaudit_rw_tcp_sockets(setfiles_t)
 	')
-')
-
-optional_policy(`
-	apt_use_fds(setfiles_t)
 ')
