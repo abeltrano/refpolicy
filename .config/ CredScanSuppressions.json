@@ -1,0 +1,11 @@
+{
+  "tool": "Credential Scanner",
+  "suppressions": [
+    {
+      "file": [ 
+          "\\policy\\modules\\.unused\\services\\dovecot.fc"
+        ],
+      "_justification": "False positive on word 'pem'"
+    }
+  ]
+}
