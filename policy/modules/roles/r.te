@@ -1,0 +1,14 @@
+policy_module(r)
+
+role r;
+role r types { 
+    kernel 
+    kernel_t 
+    wsl_init_t 
+};
+
+# Needed for context and role changes
+# anbeltra TODO: validate no longer needed and remove
+allow r {
+    r
+};
