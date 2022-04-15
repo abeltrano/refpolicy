@@ -16,8 +16,8 @@
   <files>
     <file src="Microsoft.WSA.SELinux.Policy.targets" target="build\native" />
     <file src="README.md" target="build\native" />
-    <file src="..\policy\wsl\include\**" target="build\native\include" />
-    <file src="..\policy\wsl\config" target="build\native\bin\policy\etc\selinux\config" />
+    <file src="include\**" target="build\native\include" />
+    <file src="config" target="build\native\bin\policy\etc\selinux\config" />
     <file src="..\policy.33" target="build\native\bin\policy\etc\selinux\staging\policy\policy.33" />
   </files>
 </package>
