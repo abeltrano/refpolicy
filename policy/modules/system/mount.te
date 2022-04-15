@@ -5,13 +5,6 @@ policy_module(mount)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Allow the mount command to mount any directory or file.
-## </p>
-## </desc>
-gen_tunable(allow_mount_anyfile, false)
-
 attribute_role mount_roles;
 roleattribute r mount_roles;
 
@@ -135,12 +128,6 @@ init_dontaudit_getattr_initctl(mount_t)
 selinux_getattr_fs(mount_t)
 
 userdom_use_all_users_fds(mount_t)
-
-tunable_policy(`allow_mount_anyfile',`
-	files_list_non_auth_dirs(mount_t)
-	files_read_non_auth_files(mount_t)
-	files_mounton_non_security(mount_t)
-')
 
 optional_policy(`
 	ifdef(`hide_broken_symptoms',`

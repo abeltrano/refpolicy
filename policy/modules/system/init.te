@@ -9,27 +9,6 @@ gen_require(`
 # Declarations
 #
 
-## <desc>
-## <p>
-## Enable support for upstart as the init program.
-## </p>
-## </desc>
-gen_tunable(init_upstart, false)
-
-## <desc>
-## <p>
-## Allow all daemons the ability to read/write terminals
-## </p>
-## </desc>
-gen_tunable(init_daemons_use_tty, false)
-
-## <desc>
-## <p>
-## Enable systemd to mount on all non-security files.
-## </p>
-## </desc>
-gen_tunable(init_mounton_non_security, false)
-
 attribute init_mountpoint_type;
 attribute init_path_unit_loc_type;
 attribute init_script_domain_type;
@@ -214,7 +193,6 @@ mls_process_set_level(init_t)
 # otherwise the call fails and sysvinit tries to load the policy
 # again when using the initramfs
 selinux_get_fs_mount(init_t)
-selinux_set_all_booleans(init_t)
 
 term_use_all_terms(init_t)
 
@@ -474,26 +452,6 @@ init_dontaudit_use_fds(daemon)
 # init script ptys are the stdin/out/err
 # when using run_init
 init_use_script_ptys(daemon)
-
-tunable_policy(`init_daemons_use_tty',`
-	term_use_unallocated_ttys(daemon)
-	term_use_generic_ptys(daemon)
-	term_use_all_ttys(daemon)
-	term_use_all_ptys(daemon)
-',`
-	term_dontaudit_use_unallocated_ttys(daemon)
-	term_dontaudit_use_generic_ptys(daemon)
-	term_dontaudit_use_all_ttys(daemon)
-	term_dontaudit_use_all_ptys(daemon)
- ')
-
-tunable_policy(`use_nfs_home_dirs',`
-	fs_dontaudit_rw_nfs_files(daemon)
-')
-
-tunable_policy(`use_samba_home_dirs',`
-	fs_dontaudit_rw_cifs_files(daemon)
-')
 
 optional_policy(`
 	unconfined_dontaudit_rw_pipes(daemon)

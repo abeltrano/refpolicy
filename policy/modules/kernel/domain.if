@@ -1432,10 +1432,6 @@ interface(`domain_mmap_low',`
 	')
 
 	typeattribute $1 mmap_low_domain_type;
-
-	tunable_policy(`mmap_low_allowed',`
-		allow $1 self:memprotect mmap_zero;
-	')
 ')
 
 ########################################

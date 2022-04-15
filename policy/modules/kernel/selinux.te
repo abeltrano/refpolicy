@@ -5,21 +5,6 @@ policy_module(selinux)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Boolean to determine whether the system permits loading policy, and setting
-## enforcing mode.  Set this to true and you have to reboot to set it back.
-## </p>
-## </desc>
-gen_bool(secure_mode_policyload,false)
-
-## <desc>
-## <p>
-## Boolean to determine whether the system permits setting Booelan values.
-## </p>
-## </desc>
-gen_bool(secure_mode_setbool,false)
-
 attribute boolean_type;
 attribute can_load_policy;
 attribute can_setenforce;
@@ -57,30 +42,17 @@ allow can_setenforce security_t:file rw_file_perms;
 
 dev_search_sysfs(can_setenforce)
 
-if(secure_mode_policyload) {
-	dontaudit can_setenforce security_t:security setenforce;
-} else {
-	allow can_setenforce security_t:security setenforce;
-}
-
 ########################################
 #
 # Controlled load_policy access
 #
-
-# REMOVED
-# neverallow ~{ selinux_unconfined_type can_load_policy } security_t:security load_policy;
 
 allow can_load_policy security_t:dir list_dir_perms;
 allow can_load_policy security_t:file rw_file_perms;
 
 dev_search_sysfs(can_load_policy)
 
-if(secure_mode_policyload) {
-	dontaudit can_load_policy security_t:security load_policy;
-} else {
-	allow can_load_policy security_t:security load_policy;
-}
+allow can_load_policy security_t:security load_policy;
 
 ########################################
 #
@@ -109,26 +81,9 @@ allow selinux_unconfined_type boolean_type:file read_file_perms;
 # Access the security API.
 allow selinux_unconfined_type security_t:security { compute_av compute_create compute_member check_context compute_relabel compute_user setsecparam setcheckreqprot read_policy validate_trans };
 
-if (secure_mode_policyload) {
-	dontaudit selinux_unconfined_type security_t:security { load_policy setenforce };
-} else {
-	allow selinux_unconfined_type security_t:security { load_policy setenforce };
-}
+allow selinux_unconfined_type security_t:security { load_policy setenforce };
+allow selinux_unconfined_type security_t:security setbool;
 
-if (secure_mode_setbool) {
-	dontaudit selinux_unconfined_type security_t:security setbool;
-} else {
-	allow selinux_unconfined_type security_t:security setbool;
-}
+dontaudit selinux_unconfined_type { boolean_type -secure_mode_policyload_t }:file write_file_perms;
 
-if (secure_mode_policyload && !secure_mode_setbool) {
-	allow selinux_unconfined_type { boolean_type -secure_mode_policyload_t }:file write_file_perms;
-} else {
-	dontaudit selinux_unconfined_type { boolean_type -secure_mode_policyload_t }:file write_file_perms;
-}
-
-if (!secure_mode_policyload && !secure_mode_setbool) {
-	allow selinux_unconfined_type boolean_type:file write_file_perms;
-} else {
-	dontaudit selinux_unconfined_type boolean_type:file write_file_perms;
-}
+allow selinux_unconfined_type boolean_type:file write_file_perms;

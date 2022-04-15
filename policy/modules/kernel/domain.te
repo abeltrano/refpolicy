@@ -5,14 +5,6 @@ policy_module(domain)
 # Declarations
 #
 
-## <desc>
-## <p>
-##	Control the ability to mmap a low area of the address space,
-##	as configured by /proc/sys/kernel/mmap_min_addr.
-## </p>
-## </desc>
-gen_tunable(mmap_low_allowed, false)
-
 # Mark process types as domains
 attribute domain;
 
@@ -120,14 +112,6 @@ ifdef(`hide_broken_symptoms',`
 	# listen function is called, so bad calls
 	# to listen on UDP sockets should be silenced
 	dontaudit domain self:udp_socket listen;
-')
-
-tunable_policy(`global_ssp',`
-	# enable reading of urandom for all domains:
-	# this should be enabled when all programs
-	# are compiled with ProPolice/SSP
-	# stack smashing protection.
-	dev_read_urand(domain)
 ')
 
 optional_policy(`

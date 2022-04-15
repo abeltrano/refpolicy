@@ -5,20 +5,6 @@ policy_module(authlogin)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Allow PAM usage.  If disabled, read access /etc/shadow is allowed for domains that normally use PAM.
-## </p>
-## </desc>
-gen_tunable(authlogin_pam, true)
-
-## <desc>
-## <p>
-## Allow users to resolve user passwd entries directly from ldap rather then using a sssd server
-## </p>
-## </desc>
-gen_tunable(authlogin_nsswitch_use_ldap, false)
-
 attribute can_read_shadow_passwords;
 attribute can_write_shadow_passwords;
 attribute can_relabelto_shadow_passwords;
@@ -221,12 +207,6 @@ files_read_etc_files(pam_domain)
 
 logging_send_audit_msgs(pam_domain)
 logging_send_syslog_msg(pam_domain)
-
-tunable_policy(`authlogin_pam',`
-	dontaudit pam_domain shadow_t:file read_file_perms;
-',`
-	allow pam_domain shadow_t:file read_file_perms;
-')
 
 ########################################
 #

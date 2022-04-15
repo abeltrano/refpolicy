@@ -5,23 +5,6 @@ policy_module(sysadm)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Allow sysadm to debug or ptrace all processes.
-## </p>
-## </desc>
-gen_tunable(allow_ptrace, false)
-
-## <desc>
-## <p>
-## Allow sysadm to read/write to fifo files inherited from
-## a domain allowed to change role.
-## </p>
-## </desc>
-gen_tunable(sysadm_allow_rw_inherited_fifo, false)
-
-#role sysadm_r;
-
 userdom_admin_user_template(sysadm)
 
 ifndef(`enable_mls',`

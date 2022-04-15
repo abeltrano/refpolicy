@@ -65,24 +65,6 @@ interface(`unconfined_domain_noaudit',`
 	files_get_etc_unit_status($1)
 	files_start_etc_service($1)
 	files_stop_etc_service($1)
-
-	tunable_policy(`allow_execheap',`
-		# Allow making the stack executable via mprotect.
-		allow $1 self:process execheap;
-	')
-
-	tunable_policy(`allow_execmem',`
-		# Allow making anonymous memory executable, e.g.
-		# for runtime-code generation or executable stack.
-		allow $1 self:process execmem;
-	')
-
-	tunable_policy(`allow_execstack',`
-		# Allow making the stack executable via mprotect;
-		# execstack implies execmem;
-		allow $1 self:process { execstack execmem };
-#		auditallow $1 self:process execstack;
-	')
 ')
 
 ########################################
@@ -115,10 +97,6 @@ interface(`unconfined_domain_noaudit',`
 #
 interface(`unconfined_domain',`
 	unconfined_domain_noaudit($1)
-
-	tunable_policy(`allow_execheap',`
-		auditallow $1 self:process execheap;
-	')
 ')
 
 ########################################

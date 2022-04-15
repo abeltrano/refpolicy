@@ -5,66 +5,6 @@ policy_module(userdomain)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Allow users to connect to mysql
-## </p>
-## </desc>
-gen_tunable(allow_user_mysql_connect, false)
-
-## <desc>
-## <p>
-## Allow users to connect to PostgreSQL
-## </p>
-## </desc>
-gen_tunable(allow_user_postgresql_connect, false)
-
-## <desc>
-## <p>
-## Allow regular users direct mouse access
-## </p>
-## </desc>
-gen_tunable(user_direct_mouse, false)
-
-## <desc>
-## <p>
-## Allow users to read system messages.
-## </p>
-## </desc>
-gen_tunable(user_dmesg, false)
-
-## <desc>
-## <p>
-## Allow user to r/w files on filesystems
-## that do not have extended attributes (FAT, CDROM, FLOPPY)
-## </p>
-## </desc>
-gen_tunable(user_rw_noexattrfile, false)
-
-## <desc>
-## <p>
-## Allow user to execute files on filesystems
-## that do not have extended attributes (FAT, CDROM, FLOPPY)
-## </p>
-## </desc>
-gen_tunable(user_exec_noexattrfile, false)
-
-## <desc>
-## <p>
-## Allow user to write files on removable
-## devices (e.g. external USB memory
-## devices or floppies)
-## </p>
-## </desc>
-gen_tunable(user_write_removable, false)
-
-## <desc>
-## <p>
-## Allow w to display everyone
-## </p>
-## </desc>
-gen_tunable(user_ttyfile_stat, false)
-
 attribute admindomain;
 
 # all user domains

@@ -5,46 +5,6 @@ policy_module(systemd)
 # Declarations
 #
 
-## <desc>
-## <p>
-## Enable support for systemd-tmpfiles to manage all non-security files.
-## </p>
-## </desc>
-gen_tunable(systemd_tmpfiles_manage_all, false)
-
-## <desc>
-## <p>
-## Allow systemd-nspawn to create a labelled namespace with the same types
-## as parent environment
-## </p>
-## </desc>
-gen_tunable(systemd_nspawn_labeled_namespace, false)
-
-## <desc>
-## <p>
-## Allow systemd-logind to interact with the bootloader (read which one is
-## installed on fixed disks, enumerate entries for dbus property
-## BootLoaderEntries, etc.)
-## </p>
-## </desc>
-gen_tunable(systemd_logind_get_bootloader, false)
-
-## <desc>
-## <p>
-## Allow systemd-socket-proxyd to bind any port instead of one labelled
-## with systemd_socket_proxyd_port_t.
-## </p>
-## </desc>
-gen_tunable(systemd_socket_proxyd_bind_any, false)
-
-## <desc>
-## <p>
-## Allow systemd-socket-proxyd to connect to any port instead of
-## labelled ones.
-## </p>
-## </desc>
-gen_tunable(systemd_socket_proxyd_connect_any, false)
-
 attribute systemd_log_parse_env_type;
 attribute systemd_tmpfiles_conf_type;
 attribute systemd_user_session_type;
@@ -722,14 +682,6 @@ ifdef(`distro_redhat',`
 	userdom_user_runtime_root_filetrans_user_runtime(systemd_logind_t, dir)
 ')
 
-tunable_policy(`systemd_logind_get_bootloader',`
-	fs_getattr_dos_fs(systemd_logind_t)
-	fs_getattr_xattr_fs(systemd_logind_t)
-	fs_list_dos(systemd_logind_t)
-	fs_read_dos_files(systemd_logind_t)
-
-	files_search_boot(systemd_logind_t)
-')
 # systemd-logind uses util-linux's blkid in order to find the ESP (EFI System Partition).
 # This reads the first sectors of fixed disk devices.
 storage_raw_read_fixed_disk_cond(systemd_logind_t, systemd_logind_get_bootloader)
@@ -1025,43 +977,6 @@ sysnet_manage_config(systemd_nspawn_t)
 
 userdom_manage_user_home_dirs(systemd_nspawn_t)
 
-tunable_policy(`systemd_nspawn_labeled_namespace',`
-	corecmd_exec_bin(systemd_nspawn_t)
-	corecmd_exec_shell(systemd_nspawn_t)
-
-	dev_mounton(systemd_nspawn_t)
-	dev_setattr_generic_dirs(systemd_nspawn_t)
-
-	# manage etc symlinks for /etc/localtime
-	files_manage_etc_symlinks(systemd_nspawn_t)
-	files_mounton_runtime_dirs(systemd_nspawn_t)
-	files_search_home(systemd_nspawn_t)
-
-	fs_getattr_cgroup(systemd_nspawn_t)
-	fs_manage_cgroup_dirs(systemd_nspawn_t)
-	fs_manage_tmpfs_dirs(systemd_nspawn_t)
-	fs_manage_tmpfs_files(systemd_nspawn_t)
-	fs_manage_tmpfs_symlinks(systemd_nspawn_t)
-	fs_mount_cgroup(systemd_nspawn_t)
-	fs_mounton_cgroup(systemd_nspawn_t)
-	fs_mounton_tmpfs(systemd_nspawn_t)
-	fs_mounton_tmpfs_files(systemd_nspawn_t)
-	fs_remount_cgroup(systemd_nspawn_t)
-	fs_search_tmpfs(systemd_nspawn_t)
-	fs_unmount_cgroup(systemd_nspawn_t)
-	fs_write_cgroup_files(systemd_nspawn_t)
-
-	selinux_getattr_fs(systemd_nspawn_t)
-	selinux_remount_fs(systemd_nspawn_t)
-	selinux_search_fs(systemd_nspawn_t)
-
-	init_domtrans(systemd_nspawn_t)
-
-	logging_search_logs(systemd_nspawn_t)
-
-	seutil_search_default_contexts(systemd_nspawn_t)
-')
-
 optional_policy(`
 	allow systemd_machined_t systemd_nspawn_t:dbus send_msg;
 
@@ -1252,18 +1167,6 @@ auth_use_nsswitch(systemd_socket_proxyd_t)
 
 sysnet_dns_name_resolve(systemd_socket_proxyd_t)
 
-tunable_policy(`systemd_socket_proxyd_bind_any',`
-	corenet_tcp_bind_all_ports(systemd_socket_proxyd_t)
-',`
-	allow systemd_socket_proxyd_t systemd_socket_proxyd_port_t:tcp_socket name_bind;
-')
-
-tunable_policy(`systemd_socket_proxyd_connect_any',`
-	corenet_tcp_connect_all_ports(systemd_socket_proxyd_t)
-',`
-	allow systemd_socket_proxyd_t systemd_socket_proxyd_port_t:tcp_socket name_connect;
-')
-
 #########################################
 #
 # Sessions local policy
@@ -1448,15 +1351,6 @@ systemd_log_parse_environment(systemd_tmpfiles_t)
 
 userdom_manage_user_runtime_root_dirs(systemd_tmpfiles_t)
 userdom_relabel_user_runtime_root_dirs(systemd_tmpfiles_t)
-
-tunable_policy(`systemd_tmpfiles_manage_all',`
-	# systemd-tmpfiles can be configured to manage anything.
-	# have a last-resort option for users to do this.
-	files_manage_non_security_dirs(systemd_tmpfiles_t)
-	files_manage_non_security_files(systemd_tmpfiles_t)
-	files_relabel_non_security_dirs(systemd_tmpfiles_t)
-	files_relabel_non_security_files(systemd_tmpfiles_t)
-')
 
 optional_policy(`
 	dbus_read_lib_files(systemd_tmpfiles_t)

@@ -37,10 +37,6 @@ interface(`selinux_labeled_boolean',`
 	')
 
 	typeattribute $1 boolean_type;
-
-	# because of this statement, any module which
-	# calls this interface must be in the base module:
-	# genfscon selinuxfs /booleans/$2 -- gen_context(u:object_r:$1,s0)
 ')
 
 ########################################
@@ -454,11 +450,7 @@ interface(`selinux_set_all_booleans',`
 		allow $1 { boolean_type -secure_mode_policyload_t }:file write_file_perms;
 	}
 
-	if(!secure_mode_policyload && !secure_mode_setbool) {
-		allow $1 secure_mode_policyload_t:file write_file_perms;
-	} else {
-		dontaudit $1 secure_mode_policyload_t:file write_file_perms;
-	}
+	allow $1 secure_mode_policyload_t:file write_file_perms;
 ')
 
 ########################################

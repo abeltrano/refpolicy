@@ -237,7 +237,3 @@ allow files_unconfined_type file_type:dir { manage_dir_perms relabel_dir_perms a
 
 # Mount/unmount any filesystem with the context= option.
 allow files_unconfined_type file_type:filesystem { mount remount unmount getattr relabelfrom relabelto associate quotamod quotaget watch };
-
-tunable_policy(`allow_execmod',`
-	allow files_unconfined_type file_type:file execmod;
-')
