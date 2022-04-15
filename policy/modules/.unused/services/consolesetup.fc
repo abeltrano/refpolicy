@@ -1,9 +1,0 @@
-/etc/console-setup(/.*)?	gen_context(u:object_r:consolesetup_conf_t,s0)
-
-/etc/default/console-setup.*	--	gen_context(u:object_r:consolesetup_conf_t,s0)
-/etc/default/keyboard.*	--	gen_context(u:object_r:consolesetup_conf_t,s0)
-
-/run/console-setup(/.*)?	gen_context(u:object_r:consolesetup_runtime_t,s0)
-
-/usr/lib/console-setup/console-setup\.sh	--	gen_context(u:object_r:consolesetup_exec_t,s0)
-/usr/lib/console-setup/keyboard-setup\.sh	--	gen_context(u:object_r:consolesetup_exec_t,s0)

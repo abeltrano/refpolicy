@@ -1,3 +1,0 @@
-/usr/bin/lsmd	--	gen_context(u:object_r:lsmd_exec_t,s0)
-
-/run/lsm(/.*)?	gen_context(u:object_r:lsmd_runtime_t,s0)

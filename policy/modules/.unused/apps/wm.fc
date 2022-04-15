@@ -1,6 +1,0 @@
-/usr/bin/gnome-shell	--	gen_context(u:object_r:wm_exec_t,s0)
-/usr/bin/openbox	--	gen_context(u:object_r:wm_exec_t,s0)
-/usr/bin/kwin_((wayland)|(x11))	--	gen_context(u:object_r:wm_exec_t,s0)
-/usr/bin/metacity	--	gen_context(u:object_r:wm_exec_t,s0)
-/usr/bin/mutter		--	gen_context(u:object_r:wm_exec_t,s0)
-/usr/bin/twm	--	gen_context(u:object_r:wm_exec_t,s0)
